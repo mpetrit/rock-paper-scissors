@@ -1,56 +1,85 @@
+const humanScoreHolder=document.getElementById("human-score")
+const humanChoiceHolder=document.getElementById("human-choice")
+
+const computerScoreHolder=document.getElementById("computer-score")
+const computerChoiceHolder=document.getElementById("computer-choice")
+
+const gameInfo=document.getElementById("game-info")
+
+const restartButton=document.getElementById("restart-button")
+
+const userInput= document.querySelector(".user-input")
+
+
 let humanScore=0;
 let computerScore=0;
 let choices=["rock", "paper" ,"scissors"]
 
-function playRound(getComputerChoice, getHumanChoice){
-    const pcChoice= getComputerChoice()
-    const humanChoice= getHumanChoice()
-    
-    if(humanChoice===undefined) console.log("Invalid input. Automatic loss of the round.");
+
+const checkWinner = ()=>{
+    if(humanScore==5||computerScore==5) {
+        gameInfo.textContent= humanScore==5 ? "Player won!": "Computer won!"
+        gameInfo.style.color= humanScore==5 ? "green" : "red"
+        return;
+    }
+}
+
+function playRound(pcChoice, humanChoice){
     
     if(pcChoice == humanChoice){
-        console.log("Draw");
-        console.log(`${humanScore}:${computerScore}`);
+        gameInfo.textContent="Draw"
+        humanChoiceHolder.textContent=`Player chose: ${humanChoice}`
+        computerChoiceHolder.textContent=`Computer chose: ${pcChoice}`
     }
     else if(humanChoice=="rock" && pcChoice=="scissors" 
         || humanChoice=="paper" && pcChoice=="rock"
         || humanChoice=="scissors" && pcChoice=="paper"){
-            console.log(`You win. ${humanChoice} beats ${pcChoice}.`)
+
+            gameInfo.textContent="Player won round."
+            humanChoiceHolder.textContent=`Player chose: ${humanChoice}`
+            computerChoiceHolder.textContent=`Computer chose: ${pcChoice}`
             humanScore++
-            console.log(`${humanScore}:${computerScore}`);
+            humanScoreHolder.textContent=humanScore
+            checkWinner()
+            
         }
     else{
-         console.log(`You lose. ${pcChoice} beats ${humanChoice}.`)
-         
-         computerScore++
-         console.log(`${humanScore}:${computerScore}`);
-            }
+        gameInfo.textContent="Computer won round."
+        humanChoiceHolder.textContent=`Player chose: ${humanChoice}`
+        computerChoiceHolder.textContent=`Computer chose: ${pcChoice}`
+        computerScore++
+        computerScoreHolder.textContent=computerScore
+        checkWinner()
+        
+    }
 }
-
 
 function getComputerChoice(){
     return choices[Math.floor(Math.random()*3)]
 }
 
-function getHumanChoice(){
-    let choice= prompt("Rock, Paper or Scissors:")
-    if (!choice) return undefined;
-    choice=choice.toLowerCase()
-    if(choices.includes(choice)) return choice;
-}
 
-for(let x=0;x<5;x++){
-    playRound(getComputerChoice,getHumanChoice)
-    if(x==4){
-        if(humanScore>computerScore){
-            console.log(`You won the game. ${humanScore}:${computerScore}` );
-        }
-        else if(humanScore<computerScore){
-            console.log(`You lost the game. ${humanScore}:${computerScore}` );
-        }
-        else{
-            console.log(`The game is a draw. ${humanScore}:${computerScore}`);
-            
-        }
+userInput.addEventListener("click",(e)=>{
+    const button = e.target.closest('button');
+    if (!button) return; 
+
+    const playerChoice = button.dataset.choice;
+    if(humanScore==5||computerScore==5) {
+        gameInfo.textContent= humanScore==5 ? "Player won!": "Computer won!"
+        return;
     }
-}
+    playRound(getComputerChoice(),playerChoice)
+})
+
+
+restartButton.addEventListener("click",()=>{
+    humanScore=0,computerScore=0
+    humanScoreHolder.textContent=humanScore
+    computerScoreHolder.textContent=computerScore
+
+    gameInfo.textContent="X"
+    gameInfo.style.color="black"
+
+    humanChoiceHolder.textContent=`You chose:`
+    computerChoiceHolder.textContent=`Computer chose:`
+})
